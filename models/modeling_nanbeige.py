@@ -550,7 +550,7 @@ class NanbeigeModel(NanbeigePreTrainedModel):
             if output_hidden_states:
                 all_hidden_states += (hidden_states,)
 
-            past_key_value = past_key_values.pop(0) if past_key_values is not None else None
+            past_key_value = past_key_values[idx] if past_key_values is not None else None
 
             if self.gradient_checkpointing and self.training:
 
