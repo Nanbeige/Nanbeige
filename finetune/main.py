@@ -79,9 +79,6 @@ def main():
         train_dataset=sft_dataset["train"],
         eval_dataset=sft_dataset["validation"],
         tokenizer=tokenizer,  # trainer need tokenizer.pad_token_id,
-        data_collator=transformers.DataCollatorForTokenClassification(tokenizer=tokenizer, padding="longest",
-                                                                      max_length=sft_config.max_length,
-                                                                      label_pad_token_id=-100),
         compute_metrics=compute_metrics if training_args.do_eval else None,
         preprocess_logits_for_metrics=preprocess_logits_for_metrics,
     )
