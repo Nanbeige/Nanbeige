@@ -25,22 +25,17 @@ def create_dataset(training_args, sft_config, tokenizer):
             if message['role'] == 'human':
                 return f"""### Human: \n{message['content']}\n\n"""
             elif message['role'] == 'assistant':
-                return f"""### Assistant: {message['content']}</s>"""
+                return f"""### Assistant: \n{message['content']}</s>"""
             elif message['role'] == 'system':
                 return f"""### System:{message['content']}\n</s>"""
 
         messages = [format_message(item) for item in record['messages']]
         roles = [item['role'] for item in record['messages']]
-        tokenized = tokenizer(messages)
+        tokenized = tokenizer(messages, add_special_tokens=False)
         input_ids = []
         labels = []
         attention_mask = []
         for role, tok_ids, masks in zip(roles, tokenized['input_ids'], tokenized['attention_mask']):
-            # remove bos if isn't fisrt message
-            if tok_ids[0] == tokenizer.bos_token_id:
-                tok_ids.pop(0)
-                masks.pop(0)
-
             for tok_id, mask in zip(tok_ids, masks):
                 input_ids.append(tok_id)
                 if role == 'assistant':
@@ -48,17 +43,6 @@ def create_dataset(training_args, sft_config, tokenizer):
                 else:
                     labels.append(-100)
                 attention_mask.append(mask)
-            
-            if input_ids[-1] != tokenizer.eos_token_id and role == 'assistant':
-                # append eos if assistant 
-                input_ids.append(tokenizer.eos_token_id)
-                labels.append(tokenizer.eos_token_id)
-                attention_mask.append(1)
-            elif input_ids[-1] == tokenizer.eos_token_id and role != 'assistant':
-                # remove eos if not assistant 
-                input_ids.pop()
-                labels.pop()
-                attention_mask.pop()
             
         if len(input_ids) < sft_config.max_length:
             input_ids += [tokenizer.pad_token_id] * (sft_config.max_length - len(input_ids))
