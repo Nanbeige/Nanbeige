@@ -734,11 +734,11 @@ class NanbeigeForCausalLM(NanbeigePreTrainedModel):
             if message['role'] == 'human':
                 prompt += f"""### Human: \n{message['content']}\n\n"""
             elif message['role'] == 'assistant':
-                prompt += f"""### Assistant: {message['content']}</s>"""
+                prompt += f"""### Assistant: \n{message['content']}</s>"""
             elif message['role'] == 'system':
                 prompt += f"""### System:{message['content']}\n</s>"""
-        prompt += f"""### Human: \n{query}\n\n### Assistant: """
-        return tokenizer([prompt], return_tensors="pt")
+        prompt += f"""### Human: \n{query}\n\n### Assistant: \n"""
+        return tokenizer([prompt], return_tensors="pt", add_special_tokens=False)
 
     @torch.no_grad()
     def chat(self,
