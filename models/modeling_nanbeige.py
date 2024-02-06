@@ -737,7 +737,7 @@ class NanbeigeForCausalLM(NanbeigePreTrainedModel):
                 prompt += f"""### Assistant: \n{message['content']}</s>"""
             elif message['role'] == 'system':
                 prompt += f"""### System:{message['content']}\n</s>"""
-        prompt += f"""### Human: \n{query}\n\n### Assistant: \n"""
+        prompt += f"""### Human: \n{query}\n\n ### Assistant: \n"""
         return tokenizer([prompt], return_tensors="pt", add_special_tokens=False)
 
     @torch.no_grad()
